@@ -3,13 +3,17 @@
 """
 Created on Mon Mar  5 12:13:33 2018
 
+Forked in 2023
+
 @author: Kristian B. Knudsen (kknu@berkeley.edu / kristianbknudsen@gmail.com)
+
+@author: Dirk J. De Beer
 """
 #Python dependencies
 from __future__ import division
 import pandas as pd
 import numpy as np
-from scipy.constants import codata
+import multiprocessing as multi
 from pylab import *
 from scipy.optimize import curve_fit
 import mpmath as mp
@@ -34,9 +38,19 @@ F = codata.physical_constants['Faraday constant'][0]
 Rg = codata.physical_constants['molar gas constant'][0]
 
 ### Importing PyEIS add-ons
-from .PyEIS_Data_extraction import *
-from .PyEIS_Lin_KK import *
-from .PyEIS_Advanced_tools import *
+from .PyEIS_CEFIM_Data_extraction import *
+from .PyEIS_CEFIM_Lin_KK import *
+from .PyEIS_CEFIM_Advanced_tools import *
+
+# DJDB: Added code to add backward compatibility for the use of real() instead of np.real()
+# Custom Series class with overridden real attribute
+class ComplexSeries(pd.Series):
+    @property
+    def real(self):
+        return self.apply(np.real)
+    @property
+    def imag(self):
+        return self.apply(np.imag)
 
 ### Frequency generator
 ##
@@ -57,7 +71,8 @@ def freq_gen(f_start, f_stop, pts_decade=7):
     [1] = Angular frequency range [1/s]
     '''
     f_decades = np.log10(f_start) - np.log10(f_stop)
-    f_range = np.logspace(np.log10(f_start), np.log10(f_stop), num=np.around(pts_decade*f_decades), endpoint=True)
+    # DJDB: Fixed compatibility issue where num needs to explicitly be an int
+    f_range = np.logspace(np.log10(f_start), np.log10(f_stop), num=int(np.around(pts_decade*f_decades)), endpoint=True)
     w_range = 2 * np.pi * f_range
     return f_range, w_range
 
@@ -500,6 +515,40 @@ def cir_RCRCZD(w, L, D_s, u1, u2, Cb='none', Rb='none', fsb='none', Ce='none', R
     alpha = ((w*1j*L**2)/D_s)**(1/2)
     Z_D = Rb * (u2/u1) * (tanh(x=alpha)/alpha)
     return Z_RCb + Z_RCe + Z_D
+# DJDB: Added missing functions for cir_RCZD and cir_ZD
+def cir_RCZD(w, L, D_s, Re='none', Cb='none', Rb='none', fsb='none'):
+    '''
+    
+    Inputs
+    ----------
+    w = Angular frequency [1/s]
+    L = Thickness of electrode [cm]
+    D_s = Diffusion coefficient of dissolved salt [cm2/s]
+    u1 = Mobility of the ion reacting at the electrode interface
+    u2 = Mobility of other ion
+
+    Rb = Bulk/series resistance [Ohm]
+    Cb = Bulk capacitance [F]
+    fsb = Summit frequency of the bulk (RC) circuit [Hz]
+    '''
+    Z_RCb = cir_RC(w, C=Cb, R=Rb, fs=fsb)
+    alpha = ((w*1j*L**2)/D_s)**(1/2)
+    Z_D = Re * (tanh(x=alpha)/alpha)
+    return Z_RCb + Z_D
+
+def cir_ZD(w, L, D_s, Re='none'):
+    '''
+    
+    Inputs
+    ----------
+    w = Angular frequency [1/s]
+    L = Thickness of electrode [cm]
+    D_s = Diffusion coefficient of dissolved salt [cm2/s]
+
+    '''
+    alpha = ((w*1j*L**2)/D_s)**(1/2)
+    Z_D = Re * (tanh(x=alpha)/alpha)
+    return Z_D
     
 # Transmission lines
 
@@ -1111,6 +1160,7 @@ def cir_RsQ_fit(params, w):
     n = params['n']
     return Rs + 1/(Q*(w*1j)**n)
 
+# DJDB: Fixed a bad port from cir_RQ_fit. Set n==1 and C->Q
 def cir_RC_fit(params, w):
     '''
     Fit Function: -RC-
@@ -1123,7 +1173,7 @@ def cir_RC_fit(params, w):
     if str(params.keys())[10:].find("C") == -1: #elif Q == 'none':
         R = params['R']
         fs = params['fs']
-        Q = (1/(R*(2*np.pi*fs)**n))
+        Q = (1/(R*(2*np.pi*fs)**1))
     if str(params.keys())[10:].find("n") == -1: #elif n == 'none':
         R = params['R']
         Q = params['C']
@@ -1132,7 +1182,7 @@ def cir_RC_fit(params, w):
     if str(params.keys())[10:].find("fs") == -1: #elif fs == 'none':
         R = params['R']
         Q = params['C']
-    return cir_RQ(w, R=R, Q=C, n=1, fs=fs)
+    return cir_RQ(w, R=R, Q=Q, n=1, fs=fs)
 
 
 def cir_RQ_fit(params, w):
@@ -1491,6 +1541,70 @@ def cir_RCRCZD_fit(params, w):
     alpha = ((w*1j*L**2)/D_s)**(1/2)
     Z_D = Rb * (u2/u1) * (tanh(alpha)/alpha)
     return Z_RCb + Z_RCe + Z_D
+    
+# DJDB: Added missing cir_RCZD_fit
+def cir_RCZD_fit(params, w):
+    '''
+    Fit Function: -RC_b-Z_D
+    
+    See cir_RCZD() for details
+
+    D.J. De Beer
+    '''
+    # Interfacial impendace
+    # if str(params.keys())[10:].find("Re") == -1: #if R == 'none':
+    #     Ce = params['Ce']
+    #     fse = params['fse']
+    #     Re = (1/(Ce*(2*np.pi*fse)))
+    # if str(params.keys())[10:].find("Ce") == -1: #elif Q == 'none':
+    #     Re = params['Rb']
+    #     fse = params['fsb']
+    #     Ce = (1/(Re*(2*np.pi*fse)))
+    # if str(params.keys())[10:].find("fse") == -1: #elif fs == 'none':
+    #     Re = params['Re']
+    #     Ce = params['Ce']
+    # Z_RCe = (Re/(1+Re*Ce*(w*1j)))
+
+    # Bulk impendance
+    if str(params.keys())[10:].find("Rb") == -1: #if R == 'none':
+        Cb = params['Cb']
+        fsb = params['fsb']
+        Rb = (1/(Cb*(2*np.pi*fsb)))
+    if str(params.keys())[10:].find("Cb") == -1: #elif Q == 'none':
+        Rb = params['Rb']
+        fsb = params['fsb']
+        Cb = (1/(Rb*(2*np.pi*fsb)))
+    if str(params.keys())[10:].find("fsb") == -1: #elif fs == 'none':
+        Rb = params['Rb']
+        Cb = params['Cb']
+    Z_RCb = (Rb/(1+Rb*Cb*(w*1j)))
+    
+    # Mass transport impendance
+    L = params['L']
+    D_s = params['D_s']
+    Re = params['Re']
+    
+    alpha = ((w*1j*L**2)/D_s)**(1/2)
+    Z_D = Re * (tanh(alpha)/alpha)
+    return Z_RCb + Z_D
+
+def cir_ZD_fit(params, w):
+    '''
+    Fit Function: -RC_b-Z_D
+    
+    See cir_ZD() for details
+
+    D.J. De Beer
+    '''
+    
+    # Mass transport impendance
+    L = params['L']
+    D_s = params['D_s']
+    Re = params['Re']
+    
+    alpha = ((w*1j*L**2)/D_s)**(1/2)
+    Z_D = Re * (tanh(alpha)/alpha)
+    return Z_D
 
 # Transmission lines
 
@@ -2154,6 +2268,13 @@ def leastsq_errorfunc(params, w, re, im, circuit, weight_func):
     elif circuit == 'RC-RC-ZD':
         re_fit = cir_RCRCZD_fit(params, w).real
         im_fit = -cir_RCRCZD_fit(params, w).imag
+    # DJDB: Added switch statement for missing functions
+    elif circuit == 'RC-ZD':
+        re_fit = cir_RCZD_fit(params, w).real
+        im_fit = -cir_RCZD_fit(params, w).imag
+    elif circuit == 'ZD':
+        re_fit = cir_ZD_fit(params, w).real
+        im_fit = -cir_ZD_fit(params, w).imag
     elif circuit == 'R-TLsQ':
         re_fit = cir_RsTLsQ_fit(params, w).real
         im_fit = -cir_RsTLsQ_fit(params, w).imag
@@ -2227,7 +2348,13 @@ class EIS_exp:
         Specific cycles can be extracted using this parameter, insert cycle numbers in brackets, e.g. cycle number 1,4, and 6 are wanted. cycle=[1,4,6]
         - mask: ['high frequency' , 'low frequency'], if only a high- or low-frequency is desired use 'none' for the other, e.g. maks=[10**4,'none']
     '''
-    def __init__(self, path, data, cycle='off', mask=['none','none']):
+    # DJDB: Added kwargs for customLabels and expLabel. Used in plotting
+    def __init__(self, path, data, cycle='off', mask=['none','none'], customLabels=0,expLabel=0,multiprocessing = False):
+        self.path = path
+        if(not customLabels == 0):
+            self.customLabels = customLabels
+        self.expLabel = expLabel
+        self.multiprocessing = multiprocessing
         self.df_raw0 = []
         self.cycleno = []
         for j in range(len(data)):
@@ -2237,6 +2364,8 @@ class EIS_exp:
                 self.df_raw0.append(extract_dta(path=path, EIS_name=data[j])) #reads all datafiles
             elif data[j].find(".z") != -1: #file is a .z file
                 self.df_raw0.append(extract_solar(path=path, EIS_name=data[j])) #reads all datafiles
+            elif data[j].find(".p") != -1: #file is a .pickle file
+                self.df_raw0.append(extract_pickle(path=path, EIS_name=data[j])) #reads all datafiles
             else:
                 print('Data file(s) could not be identified')
 
@@ -2248,40 +2377,50 @@ class EIS_exp:
 #                print('__init__ Error (#1)')
 
         #currently need to append a cycle_number coloumn to gamry files
-
+            
         # adds individual dataframes into one
-        if len(self.df_raw0) == 1:
-            self.df_raw = self.df_raw0[0]
-        elif len(self.df_raw0) == 2:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1]], axis=0)
-        elif len(self.df_raw0) == 3:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2]], axis=0)
-        elif len(self.df_raw0) == 4:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3]], axis=0)
-        elif len(self.df_raw0) == 5:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4]], axis=0)
-        elif len(self.df_raw0) == 6:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5]], axis=0)
-        elif len(self.df_raw0) == 7:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6]], axis=0)
-        elif len(self.df_raw0) == 8:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7]], axis=0)
-        elif len(self.df_raw0) == 9:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8]], axis=0)
-        elif len(self.df_raw0) == 10:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9]], axis=0)
-        elif len(self.df_raw0) == 11:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10]], axis=0)
-        elif len(self.df_raw0) == 12:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11]], axis=0)
-        elif len(self.df_raw0) == 13:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11], self.df_raw0[12]], axis=0)
-        elif len(self.df_raw0) == 14:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11]], self.df_raw0[12], self.df_raw0[13], axis=0)
-        elif len(self.df_raw0) == 15:
-            self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11]], self.df_raw0[12], self.df_raw0[13], self.df_raw0[14], axis=0)
-        else:
-            print("Too many data files || 15 allowed")
+        
+        
+        # DJDB: Replaced all  this code with smaller code that can scale arbitrarily
+        ## START EDIT
+        # if len(self.df_raw0) == 1:
+        #     self.df_raw = self.df_raw0[0]
+        # elif len(self.df_raw0) == 2:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1]], axis=0)
+        # elif len(self.df_raw0) == 3:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2]], axis=0)
+        # elif len(self.df_raw0) == 4:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3]], axis=0)
+        # elif len(self.df_raw0) == 5:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4]], axis=0)
+        # elif len(self.df_raw0) == 6:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5]], axis=0)
+        # elif len(self.df_raw0) == 7:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6]], axis=0)
+        # elif len(self.df_raw0) == 8:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7]], axis=0)
+        # elif len(self.df_raw0) == 9:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8]], axis=0)
+        # elif len(self.df_raw0) == 10:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9]], axis=0)
+        # elif len(self.df_raw0) == 11:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10]], axis=0)
+        # elif len(self.df_raw0) == 12:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11]], axis=0)
+        # elif len(self.df_raw0) == 13:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11], self.df_raw0[12]], axis=0)
+        # elif len(self.df_raw0) == 14:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11], self.df_raw0[12], self.df_raw0[13]], axis=0)
+        # elif len(self.df_raw0) == 15:
+        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11], self.df_raw0[12], self.df_raw0[13], self.df_raw0[14]], axis=0)
+        # else:
+        #     print("Too many data files || 15 allowed")
+                
+        self.df_raw=pd.concat(self.df_raw0,axis=0)
+            
+            
+        ## END EDIT
+        
         self.df_raw = self.df_raw.assign(w = 2*np.pi*self.df_raw.f) #creats a new coloumn with the angular frequency
 
         #Masking data to each cycle
@@ -2636,8 +2775,9 @@ class EIS_exp:
             else:
                 print('RC simulation circuit not defined')
                 print('   Number of RC = ', self.number_RC)
-            self.KK_rr_re.append(residual_real(re=self.df[i].re, fit_re=self.KK_circuit_fit[i].real, fit_im=-self.KK_circuit_fit[i].imag)) #relative residuals for the real part
-            self.KK_rr_im.append(residual_imag(im=self.df[i].im, fit_re=self.KK_circuit_fit[i].real, fit_im=-self.KK_circuit_fit[i].imag)) #relative residuals for the imag part
+            # DJDB: Manuall applied fix for real and .real compatibilty
+            self.KK_rr_re.append(residual_real(re=self.df[i].re, fit_re=real(self.KK_circuit_fit[i]), fit_im=-imag(self.KK_circuit_fit[i]))) #relative residuals for the real part
+            self.KK_rr_im.append(residual_imag(im=self.df[i].im, fit_re=real(self.KK_circuit_fit[i]), fit_im=-imag(self.KK_circuit_fit[i]))) #relative residuals for the imag part
 
         ### Plotting Linear_kk results
         ##
@@ -2656,6 +2796,12 @@ class EIS_exp:
                 self.label_re_1.append("Z' ("+str(np.round(np.average(self.df[i].E_avg), 2))+' V)')
                 self.label_im_1.append("Z'' ("+str(np.round(np.average(self.df[i].E_avg), 2))+' V)')
                 self.label_cycleno.append(str(np.round(np.average(self.df[i].E_avg), 2))+' V')
+        # DJDB: Added labels functionality to graphs
+        elif legend == 'labels':
+            for i in range(len(self.df)):
+                self.label_re_1.append("Z' ("+self.customLabels[i]+')')
+                self.label_im_1.append("Z'' ("+self.customLabels[i]+')')
+                self.label_cycleno.append(self.customLabels[i])
 
 
         if plot == 'w_data':
@@ -2680,7 +2826,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), self.df[i].im, color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_im_1[i])
                     ax1.set_xlabel("log(f) [Hz]")
                     ax1.set_ylabel("Z', -Z'' [$\Omega$]")
-                    if legend == 'on' or legend == 'potential':
+                    if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
             elif bode == 're':
@@ -2688,7 +2834,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), self.df[i].re, color=colors_real[i+1], marker='D', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
                     ax1.set_ylabel("Z' [$\Omega$]")
-                    if legend == 'on' or legend == 'potential':
+                    if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
             elif bode == 'log_re':
@@ -2696,7 +2842,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].re), color=colors_real[i+1], marker='D', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
                     ax1.set_ylabel("log(Z') [$\Omega$]")
-                    if legend == 'on' or legend == 'potential':
+                    if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
             elif bode == 'im':
@@ -2704,7 +2850,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), self.df[i].im, color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
                     ax1.set_ylabel("-Z'' [$\Omega$]")
-                    if legend == 'on' or legend == 'potential':
+                    if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
             elif bode == 'log_im':
@@ -2712,7 +2858,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].im), color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
                     ax1.set_ylabel("log(-Z'') [$\Omega$]")
-                    if legend == 'on' or legend == 'potential':
+                    if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)      
 
             elif bode == 'log':
@@ -2721,7 +2867,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].im), color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_im_1[i])
                     ax1.set_xlabel("log(f) [Hz]")
                     ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
-                    if legend == 'on' or legend == 'potential':
+                    if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
             ### Kramers-Kronig Relative Residuals    
@@ -2730,7 +2876,7 @@ class EIS_exp:
                 ax2.plot(np.log10(self.df[i].f), self.KK_rr_im[i]*100, color=colors_imag[i+1], marker='s', ls='--', ms=6, alpha=.7, label=self.label_im_1[i])
                 ax2.set_xlabel("log(f) [Hz]")
                 ax2.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]")
-                if legend == 'on' or legend == 'potential': 
+                if legend == 'on' or legend == 'potential' or legend =='labels':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
             ax2.axhline(0, ls='--', c='k', alpha=.5)
             
@@ -2752,7 +2898,7 @@ class EIS_exp:
                 ax2.annotate('Lin-KK', xy=[np.min(np.log10(self.df[0].f)), np.max(self.KK_rr_im_max)*100*.9], color='k', fontweight='bold')
                 
             ### Figure specifics
-            if legend == 'on' or legend == 'potential':
+            if legend == 'on' or legend == 'potential' or legend =='labels':
                 ax.legend(loc='best', fontsize=10, frameon=False)
             ax.set_xlabel("Z' [$\Omega$]")
             ax.set_ylabel("-Z'' [$\Omega$]")
@@ -3972,8 +4118,13 @@ class EIS_exp:
                     fig.savefig(savefig)
             else:
                 print('Too many spectras, cannot plot all. Maximum spectras allowed = 9')
+                
+    def fit_function(self, i, df, params, method, circuit, weight_func, nan_policy):
+        fit_result = minimize(leastsq_errorfunc, params, method=method, args=(df[i].w.values, df[i].re.values, df[i].im.values, circuit, weight_func), nan_policy=nan_policy, max_nfev=9999990)
+        fit_E = np.average(df[i].E_avg)
+        return fit_result, fit_E
 
-    def EIS_fit(self, params, circuit, weight_func='modulus', nan_policy='raise'):
+    def EIS_fit(self, params, circuit, weight_func='modulus', nan_policy='raise',method="L-BFGS-B"):
         '''
         EIS_fit() fits experimental data to an equivalent circuit model using complex non-linear least-squares (CNLS) fitting procedure and allows for batch fitting.
         
@@ -4023,11 +4174,25 @@ class EIS_exp:
         self.Fit = []
         self.circuit_fit = []
         self.fit_E = []
-        for i in range(len(self.df)):
-            self.Fit.append(minimize(leastsq_errorfunc, params, method='leastsq', args=(self.df[i].w.values, self.df[i].re.values, self.df[i].im.values, circuit, weight_func), nan_policy=nan_policy, maxfev=9999990))
-            print(report_fit(self.Fit[i]))
+        
+        if not self.multiprocessing:
+            for i in range(len(self.df)):
+                self.Fit.append(minimize(leastsq_errorfunc, params, method=method, args=(self.df[i].w.values, self.df[i].re.values, self.df[i].im.values, circuit, weight_func), nan_policy=nan_policy, max_nfev=9999990))
+                print(report_fit(self.Fit[i]))
+                
+                self.fit_E.append(np.average(self.df[i].E_avg))
+        else:
+            pool = multi.Pool(multi.cpu_count())
+            results = [pool.apply_async(self.fit_function, args=(i, self.df, params, method, circuit, weight_func, nan_policy)) for i in range(len(self.df))]
+            pool.close()
+            pool.join()
             
-            self.fit_E.append(np.average(self.df[i].E_avg))
+            for result in results:
+                fit_result, fit_E_value = result.get()
+                self.Fit.append(fit_result)
+                self.fit_E.append(fit_E_value)
+                print(report_fit(fit_result))
+
             
         if circuit == 'C':
             self.fit_C = []
@@ -4612,6 +4777,38 @@ class EIS_exp:
                     self.fit_Rb.append(self.Fit[i].params.get('Rb').value)                    
                     self.fit_Qb.append(self.Fit[i].params.get('Qb').value)
                     self.fit_nb.append(self.Fit[i].params.get('nb').value)
+        elif circuit == 'RC-ZD':
+            self.fit_L = []
+            self.fit_D_s = []
+            self.fit_Re = []
+            self.fit_Cb = []
+            self.fit_Rb = []
+            self.fit_fsb = []
+            for i in range(len(self.df)):
+                if "'fsb'" in str(self.Fit[i].params.keys()):
+                    self.circuit_fit.append(cir_RCZD(w=self.df[i].w, L=self.Fit[i].params.get('L').value, D_s=self.Fit[i].params.get('D_s').value,Re=self.Fit[i].params.get('Re').value,Cb='none',Rb=self.Fit[i].params.get('Rb').value,fsb=self.Fit[i].params.get('fsb').value))
+                    self.fit_L.append(self.Fit[i].params.get('L').value)
+                    self.fit_D_s.append(self.Fit[i].params.get('D_s').value)
+                    self.fit_fsb.append(self.Fit[i].params.get('fsb').value)
+                    self.fit_Rb.append(self.Fit[i].params.get('Rb').value)
+                    self.fit_Re.append(self.Fit[i].params.get('Re').value)
+                elif "'Cb'" in str(self.Fit[i].params.keys()):
+                    self.circuit_fit.append(cir_RCZD(w=self.df[i].w, L=self.Fit[i].params.get('L').value, D_s=self.Fit[i].params.get('D_s').value,Re=self.Fit[i].params.get('Re').value,Cb=self.Fit[i].params.get('Cb').value,Rb=self.Fit[i].params.get('Rb').value,fsb='none'))
+                    self.fit_L.append(self.Fit[i].params.get('L').value)
+                    self.fit_D_s.append(self.Fit[i].params.get('D_s').value)
+                    self.fit_Cb.append(self.Fit[i].params.get('Cb').value)
+                    self.fit_Rb.append(self.Fit[i].params.get('Rb').value)
+                    self.fit_Re.append(self.Fit[i].params.get('Re').value)
+        elif circuit == 'ZD':
+            self.fit_L = []
+            self.fit_D_s = []
+            self.fit_Re = []
+            for i in range(len(self.df)):
+                self.circuit_fit.append(cir_ZD(w=self.df[i].w, L=self.Fit[i].params.get('L').value, D_s=self.Fit[i].params.get('D_s').value,Re=self.Fit[i].params.get('Re').value))
+                self.fit_L.append(self.Fit[i].params.get('L').value)
+                self.fit_D_s.append(self.Fit[i].params.get('D_s').value)
+                self.fit_Re.append(self.Fit[i].params.get('Re').value)
+                
         else:
             print('Circuit was not properly defined, see details described in definition')
 
@@ -4691,6 +4888,11 @@ class EIS_exp:
                 self.label_re_1.append("Z' ("+str(np.round(np.average(self.df[i].E_avg), 2))+' V)')
                 self.label_im_1.append("Z'' ("+str(np.round(np.average(self.df[i].E_avg), 2))+' V)')
                 self.label_cycleno.append(str(np.round(np.average(self.df[i].E_avg), 2))+' V')
+        elif legend == 'labels':
+            for i in range(len(self.df)):
+                self.label_re_1.append("Z' ("+self.customLabels[i]+')')
+                self.label_im_1.append("Z'' ("+self.customLabels[i]+')')
+                self.label_cycleno.append(self.customLabels[i])
 
 
 
@@ -4698,7 +4900,7 @@ class EIS_exp:
         for i in range(len(self.df)):
             ax.plot(self.df[i].re, self.df[i].im, marker='o', ms=4, lw=2, color=colors[i], ls='-', label=self.label_cycleno[i])
             if fitting == 'on':
-                ax.plot(self.circuit_fit[i].real, -self.circuit_fit[i].imag, lw=0, marker='o', ms=8, mec='r', mew=1, mfc='none', label='')
+                ax.plot(real(self.circuit_fit[i]), -imag(self.circuit_fit[i]), lw=0, marker='o', ms=8, mec='r', mew=1, mfc='none', label='')
 
         ### Bode Plot
         if bode=='on':
@@ -4710,7 +4912,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), -self.circuit_fit[i].imag, lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
                 ax1.set_xlabel("log(f) [Hz]")
                 ax1.set_ylabel("Z', -Z'' [$\Omega$]")
-                if legend == 'on' or legend == 'potential': 
+                if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
             
         elif bode == 're':
@@ -4720,7 +4922,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), self.circuit_fit[i].real, lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
                 ax1.set_ylabel("Z' [$\Omega$]")
-                if legend == 'on' or legend =='potential':
+                if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode == 'log_re':
@@ -4730,17 +4932,17 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.circuit_fit[i].real), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
                 ax1.set_ylabel("log(Z') [$\Omega$]")
-                if legend == 'on' or legend == 'potential': 
+                if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='im':
             for i in range(len(self.df)):
                 ax1.plot(np.log10(self.df[i].f), self.df[i].im, color=colors_imag[i], marker='s', ms=3, lw=2.25, ls='-', label=self.label_cycleno[i])
                 if fitting == 'on':
-                    ax1.plot(np.log10(self.df[i].f), -self.circuit_fit[i].imag, lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='')
+                    ax1.plot(np.log10(self.df[i].f), -imag(self.circuit_fit[i]), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
                 ax1.set_ylabel("-Z'' [$\Omega$]")
-                if legend == 'on' or legend == 'potential':
+                if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='log_im':
@@ -4750,7 +4952,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), np.log10(-self.circuit_fit[i].imag), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
                 ax1.set_ylabel("log(-Z'') [$\Omega$]")
-                if legend == 'on' or legend == 'potential':
+                if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode == 'log':
@@ -4758,11 +4960,11 @@ class EIS_exp:
                 ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].re), color=colors_real[i], marker='D', ms=3, lw=2.25,  ls='-', label=self.label_re_1[i])
                 ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].im), color=colors_imag[i], marker='s', ms=3, lw=2.25,  ls='-', label=self.label_im_1[i])
                 if fitting == 'on':
-                    ax1.plot(np.log10(self.df[i].f), np.log10(self.circuit_fit[i].real), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
-                    ax1.plot(np.log10(self.df[i].f), np.log10(-self.circuit_fit[i].imag), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
+                    ax1.plot(np.log10(self.df[i].f), np.log10(real(self.circuit_fit[i])), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
+                    ax1.plot(np.log10(self.df[i].f), np.log10(-imag(self.circuit_fit[i])), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
                 ax1.set_xlabel("log(f) [Hz]")
                 ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
-                if legend == 'on' or legend == 'potential':
+                if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
         ### Relative Residuals on Fit
@@ -4773,13 +4975,16 @@ class EIS_exp:
                 self.rr_real = []
                 self.rr_imag = []
                 for i in range(len(self.df)):
-                    self.rr_real.append(residual_real(re=self.df[i].re.values, fit_re=self.circuit_fit[i].real, fit_im=-self.circuit_fit[i].imag))
-                    self.rr_imag.append(residual_imag(im=self.df[i].im.values, fit_re=self.circuit_fit[i].real, fit_im=-self.circuit_fit[i].imag))
+                    self.rr_real.append(residual_real(re=self.df[i].re.values, fit_re=real(self.circuit_fit[i]), fit_im=-imag(self.circuit_fit[i])))
+                    self.rr_imag.append(residual_imag(im=self.df[i].im.values, fit_re=real(self.circuit_fit[i]), fit_im=-imag(self.circuit_fit[i])))
                     if legend == 'on':
                         ax2.plot(np.log10(self.df[i].f), self.rr_real[i]*100, color=colors_real[i], marker='D', ms=6, lw=1, ls='--', label='#'+str(i+1))
                         ax2.plot(np.log10(self.df[i].f), self.rr_imag[i]*100, color=colors_imag[i], marker='s', ms=6, lw=1, ls='--',label='')
                     elif legend == 'potential':
                         ax2.plot(np.log10(self.df[i].f), self.rr_real[i]*100, color=colors_real[i], marker='D', ms=6, lw=1, ls='--', label=str(np.round(np.average(self.df[i].E_avg.values),2))+' V')
+                        ax2.plot(np.log10(self.df[i].f), self.rr_imag[i]*100, color=colors_imag[i], marker='s', ms=6, lw=1, ls='--',label='')
+                    elif legend == 'labels':
+                        ax2.plot(np.log10(self.df[i].f), self.rr_real[i]*100, color=colors_real[i], marker='D', ms=6, lw=1, ls='--', label=self.customLabels[i])
                         ax2.plot(np.log10(self.df[i].f), self.rr_imag[i]*100, color=colors_imag[i], marker='s', ms=6, lw=1, ls='--',label='')
 
                     ax2.axhline(0, ls='--', c='k', alpha=.5)
@@ -4816,7 +5021,7 @@ class EIS_exp:
                     ax2.legend(loc='best', fontsize=10, frameon=False)
 
         ### Figure specifics
-        if legend == 'on' or legend == 'potential':
+        if legend == 'on' or legend == 'potential' or legend == 'labels':
             ax.legend(loc='best', fontsize=10, frameon=False)
         ax.set_xlabel("Z' [$\Omega$]")
         ax.set_ylabel("-Z'' [$\Omega$]")
@@ -4839,7 +5044,7 @@ class EIS_exp:
         self.circuit_fit = []
         
         for i in range(len(self.df)):
-            self.Fit.append(minimize(leastsq_errorfunc_uelectrode, params, method='leastsq', args=(self.df[i].w, self.df[i].re, self.df[i].im, circuit, weight_func, np.average(self.df[i].E_avg), D_ox, r, theta_real_red, theta_imag_red, n, T, F, R), nan_policy=nan_policy, maxfev=9999990))
+            self.Fit.append(minimize(leastsq_errorfunc_uelectrode, params, method='leastsq', args=(self.df[i].w, self.df[i].re, self.df[i].im, circuit, weight_func, np.average(self.df[i].E_avg), D_ox, r, theta_real_red, theta_imag_red, n, T, F, R), nan_policy=nan_policy, max_nfev=9999990))
             print(report_fit(self.Fit[i]))
         
             if circuit == 'R-(Q(RM)),BV_red':
@@ -4887,7 +5092,7 @@ class EIS_exp:
         self.fit_Cred = []
 
         for i in range(len(self.df)):
-            self.Fit.append(minimize(leastsq_errorfunc_uelectrode, params, method='leastsq', args=(self.df[i].w, self.df[i].re, self.df[i].im, circuit, weight_func, E, alpha, n, C_ox, D_red, D_ox, r, theta_real_red, theta_real_ox, theta_imag_red, theta_imag_ox, F, R, T), nan_policy=nan_policy, maxfev=9999990))
+            self.Fit.append(minimize(leastsq_errorfunc_uelectrode, params, method='leastsq', args=(self.df[i].w, self.df[i].re, self.df[i].im, circuit, weight_func, E, alpha, n, C_ox, D_red, D_ox, r, theta_real_red, theta_real_ox, theta_imag_red, theta_imag_ox, F, R, T), nan_policy=nan_policy, max_nfev=9999990))
             print(report_fit(self.Fit[i]))
             if circuit == 'R-(Q(RM))':
                 if "'fs'" in str(self.Fit[i].params.keys()):
@@ -4947,7 +5152,7 @@ class EIS_exp:
         ------------
         The fitted impedance spectra(s) but also the fitted parameters that were used in the initial guesses. To call these use e.g. self.fit_Rs
         '''
-        self.Fit = minimize(leastsq_errorfunc_uelectrode, params, method='leastsq', args=(self.w, self.re, self.im, circuit, weight_func, E, alpha, n, C_ox, D_red, D_ox, r, theta_real_red, theta_real_ox, theta_imag_red, theta_imag_ox, F, R, T), nan_policy=nan_policy, maxfev=9999990)
+        self.Fit = minimize(leastsq_errorfunc_uelectrode, params, method='leastsq', args=(self.w, self.re, self.im, circuit, weight_func, E, alpha, n, C_ox, D_red, D_ox, r, theta_real_red, theta_real_ox, theta_imag_red, theta_imag_ox, F, R, T), nan_policy=nan_policy, max_nfev=9999990)
         print(report_fit(self.Fit))
     
 
@@ -5071,35 +5276,35 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), self.im, color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("Z', -Z'' [$\Omega$]")
-            if legend == 'on':
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
             
         elif bode == 're':
             ax1.plot(np.log10(self.f), self.re, color=colors_real[0], marker='D', ms=3, lw=2.25, ls='-', label="Z'")
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("Z' [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode == 'log_re':
             ax1.plot(np.log10(self.f), np.log10(self.re), color=colors_real[0], marker='D', ms=3, lw=2.25, ls='-', label="Z''")
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("log(Z') [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='im':
             ax1.plot(np.log10(self.f), self.im, color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("-Z'' [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='log_im':
             ax1.plot(np.log10(self.f), np.log10(self.im), color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("log(-Z'') [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode == 'log':
@@ -5107,11 +5312,11 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(self.im), color=colors_imag[0], marker='s', ms=3, lw=2.25,  ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
         
         ### Figure specifics
-        if legend == 'on': 
+        if legend == 'on' or legend == 'labels':
             ax.legend(loc='best', fontsize=10, frameon=False)
         ax.set_xlabel("Z' [$\Omega$]")
         ax.set_ylabel("-Z'' [$\Omega$]")
@@ -5179,7 +5384,7 @@ class EIS_sim:
         ------------
         The fitted impedance spectra(s) but also the fitted parameters that were used in the initial guesses. To call these use e.g. self.fit_Rs
         '''
-        self.Fit = minimize(leastsq_errorfunc, params, method='leastsq', args=(self.w, self.re, self.im, circuit, weight_func), maxfev=9999990, nan_policy=nan_policy)
+        self.Fit = minimize(leastsq_errorfunc, params, method='leastsq', args=(self.w, self.re, self.im, circuit, weight_func), max_nfev=9999990, nan_policy=nan_policy)
         print(report_fit(self.Fit))
 
         if circuit == 'C':
@@ -5937,6 +6142,36 @@ class EIS_sim:
                 self.fit_Re.append(self.Fit.params.get('Re').value)
                 self.fit_fsb.append(self.Fit.params.get('fsb').value)
                 self.fit_Ce.append(self.Fit.params.get('Ce').value)  
+        elif circuit == 'RC-ZD':
+            self.fit_L = []
+            self.fit_D_s = []
+            self.fit_Re = []
+            self.fit_Cb = []
+            self.fit_Rb = []
+            self.fit_fsb = []
+            if "'fsb'" in str(self.Fit.params.keys()):
+                self.circuit_fit = cir_RCZD(w=self.w, L=self.Fit.params.get('L').value, D_s=self.Fit.params.get('D_s').value,Re=self.Fit[i].params.get('Re').value, Cb='none', Rb=self.Fit.params.get('Rb').value, fsb=self.Fit.params.get('fsb').value)
+                self.fit_L.append(self.Fit.params.get('L').value)
+                self.fit_D_s.append(self.Fit.params.get('D_s').value)
+                self.fit_Rb.append(self.Fit.params.get('Rb').value)         
+                self.fit_fsb.append(self.Fit.params.get('fsb').value)
+                self.fit_Re.append(self.Fit.params.get('Re').value)
+            elif "'Cb'" in str(self.Fit.params.keys()):
+                self.circuit_fit = cir_RCZD(w=self.w, L=self.Fit.params.get('L').value, D_s=self.Fit.params.get('D_s').value,Re=self.Fit[i].params.get('Re').value, Cb=self.Fit.params.get('Cb').value, Rb=self.Fit.params.get('Rb').value, fsb='none')
+                self.fit_L.append(self.Fit.params.get('L').value)
+                self.fit_D_s.append(self.Fit.params.get('D_s').value)
+                self.fit_Rb.append(self.Fit.params.get('Rb').value)
+                self.fit_Cb.append(self.Fit.params.get('Cb').value)
+                self.fit_Re.append(self.Fit.params.get('Re').value)
+        elif circuit == 'ZD':
+            self.fit_L = []
+            self.fit_D_s = []
+            self.fit_Re = []
+            
+            self.circuit_fit = cir_ZD(w=self.w, L=self.Fit.params.get('L').value, D_s=self.Fit.params.get('D_s').value,Re=self.Fit[i].params.get('Re').value)
+            self.fit_L.append(self.Fit.params.get('L').value)
+            self.fit_D_s.append(self.Fit.params.get('D_s').value)
+            self.fit_Re.append(self.Fit.params.get('Re').value)
         else:
             print('Circuit is not properly defined, see details described in definition')
 
@@ -5961,7 +6196,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), -self.circuit_fit.imag, lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("Z', -Z'' [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
             
         elif bode == 're':
@@ -5969,7 +6204,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), self.circuit_fit.real, lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("Z' [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode == 'log_re':
@@ -5977,7 +6212,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(self.circuit_fit.real), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("log(Z') [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='im':
@@ -5985,7 +6220,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), -self.circuit_fit.imag, lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("-Z'' [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='log_im':
@@ -5993,7 +6228,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(-self.circuit_fit.imag), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("log(-Z'') [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode == 'log':
@@ -6003,11 +6238,11 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(-self.circuit_fit.imag), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
             ax1.set_xlabel("log(f) [Hz]")
             ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
-            if legend == 'on': 
+            if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
         
         ### Figure specifics
-        if legend == 'on': 
+        if legend == 'on' or legend == 'labels':
             ax.legend(loc='best', fontsize=10, frameon=False)
         ax.set_xlabel("Z' [$\Omega$]")
         ax.set_ylabel("-Z'' [$\Omega$]")
