@@ -39,9 +39,9 @@ F = codata.physical_constants['Faraday constant'][0]
 Rg = codata.physical_constants['molar gas constant'][0]
 
 ### Importing PyEIS add-ons
-from .PyEIS_CEFIM_Data_extraction import *
-from .PyEIS_CEFIM_Lin_KK import *
-from .PyEIS_CEFIM_Advanced_tools import *
+from .PyEIS_Data_extraction import *
+from .PyEIS_Lin_KK import *
+from .PyEIS_Advanced_tools import *
 
 # DJDB: Added code to add backward compatibility for the use of real() instead of np.real()
 # Custom Series class with overridden real attribute
