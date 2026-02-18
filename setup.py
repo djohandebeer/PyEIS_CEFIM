@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="PyEIS_CEFIM",
-    version="0.1.0",
+    version="0.1.1",
     author="D. Johan De Beer",
     author_email="dirk.debeer@up.ac.za",
     description="A Python-based Electrochemical Impedance Spectroscopy simulator and analyzer (CEFIM branch)",
