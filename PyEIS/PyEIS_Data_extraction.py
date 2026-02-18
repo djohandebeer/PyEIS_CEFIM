@@ -142,6 +142,26 @@ def extract_solar(path, EIS_name):
     data = data.assign(cycle_number = 1.0)
     return data
 
+def extract_pickle(path, EIS_name):
+    pickleDat = pd.read_pickle(path+EIS_name)
+    
+    start = 0
+    end = len(pickleDat[1])-0
+    
+    tmp_dict = {
+        'f' : pickleDat[1][start:end],
+        'Z_mag' : pickleDat[2][start:end],
+        'Z_phase' : np.pi*np.array(pickleDat[3][start:end])/180
+        }
+    data = pd.DataFrame(tmp_dict)
+    data = data.assign(re = data.Z_mag*np.cos(data.Z_phase))
+    data = data.assign(im = -data.Z_mag*np.sin(data.Z_phase))
+    data = data.assign(cycle_number = 1.0)
+    data = data.assign(E_avg = 0)
+    return data
+    
+# print(extract_pickle("E:\Downloads\\0706Set1\ImpedanceData\\","022.pickle"))
+# print(extract_mpt("E:\Downloads\\0706Set1\ImpedanceData\\","ex1.mpt"))
 #
 #print()
 #print('---> Data Extraction Script Loaded (v. 0.0.2 - 06/27/18)')

@@ -4,15 +4,17 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="PyEIS",
-    version="1.0.1",
-    author="Kristian B. Knudsen",
-    author_email="kknu@berkeley.edu",
-    description="A Python-based Electrochemical Impedance Spectroscopy simulator and analyzer",
+    name="PyEIS_CEFIM",
+    version="1.0.1.cefim",
+    author="D. Johan De Beer",
+    author_email="dirk.debeer@up.ac.za",
+    description="A Python-based Electrochemical Impedance Spectroscopy simulator and analyzer (CEFIM branch)",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/kbknudsen/PyEIS",
-    packages=['PyEIS'],
+    url="https://github.com/djohandebeer/PyEIS_CEFIM",
+    
+    packages=['PyEIS'], 
+    
     scripts=['bin/PyEIS_script.py'],
     classifiers=[
         "Programming Language :: Python :: 3",

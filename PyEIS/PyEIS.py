@@ -7,6 +7,7 @@ Forked in 2023
 
 @author: Kristian B. Knudsen (kknu@berkeley.edu / kristianbknudsen@gmail.com)
 
+Last update: July 2025
 @author: Dirk J. De Beer
 """
 #Python dependencies
