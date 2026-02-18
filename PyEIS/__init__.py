@@ -4,4 +4,4 @@
 from .PyEIS import *
 
 
-__version__ = '1.0.9'
+__version__ = '0.1.1'
