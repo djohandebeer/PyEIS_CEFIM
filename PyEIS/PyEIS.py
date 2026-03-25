@@ -2753,7 +2753,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), self.df[i].re, color=colors_real[i+1], marker='D', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_re_1[i])
                     ax1.plot(np.log10(self.df[i].f), self.df[i].im, color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_im_1[i])
                     ax1.set_xlabel("log(f) [Hz]")
-                    ax1.set_ylabel("Z', -Z'' [$\Omega$]")
+                    ax1.set_ylabel(r"Z', -Z'' [$\Omega$]")
                     if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -2761,7 +2761,7 @@ class EIS_exp:
                 for i in range(len(self.df)):
                     ax1.plot(np.log10(self.df[i].f), self.df[i].re, color=colors_real[i+1], marker='D', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
-                    ax1.set_ylabel("Z' [$\Omega$]")
+                    ax1.set_ylabel(r"Z' [$\Omega$]")
                     if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -2769,7 +2769,7 @@ class EIS_exp:
                 for i in range(len(self.df)):
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].re), color=colors_real[i+1], marker='D', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
-                    ax1.set_ylabel("log(Z') [$\Omega$]")
+                    ax1.set_ylabel(r"log(Z') [$\Omega$]")
                     if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -2777,7 +2777,7 @@ class EIS_exp:
                 for i in range(len(self.df)):
                     ax1.plot(np.log10(self.df[i].f), self.df[i].im, color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
-                    ax1.set_ylabel("-Z'' [$\Omega$]")
+                    ax1.set_ylabel(r"-Z'' [$\Omega$]")
                     if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -2785,7 +2785,7 @@ class EIS_exp:
                 for i in range(len(self.df)):
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].im), color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_cycleno[i])
                     ax1.set_xlabel("log(f) [Hz]")
-                    ax1.set_ylabel("log(-Z'') [$\Omega$]")
+                    ax1.set_ylabel(r"log(-Z'') [$\Omega$]")
                     if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)      
 
@@ -2794,7 +2794,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].re), color=colors_real[i+1], marker='D', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_re_1[i])
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.df[i].im), color=colors_imag[i+1], marker='s', ms=3, lw=2.25, ls='-', alpha=.7, label=self.label_im_1[i])
                     ax1.set_xlabel("log(f) [Hz]")
-                    ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
+                    ax1.set_ylabel(r"log(Z', -Z'') [$\Omega$]")
                     if legend == 'on' or legend == 'potential' or legend =='labels':
                         ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -2828,8 +2828,8 @@ class EIS_exp:
             ### Figure specifics
             if legend == 'on' or legend == 'potential' or legend =='labels':
                 ax.legend(loc='best', fontsize=10, frameon=False)
-            ax.set_xlabel("Z' [$\Omega$]")
-            ax.set_ylabel("-Z'' [$\Omega$]")
+            ax.set_xlabel(r"Z' [$\Omega$]")
+            ax.set_ylabel(r"-Z'' [$\Omega$]")
             if nyq_xlim != 'none':
                 ax.set_xlim(nyq_xlim[0], nyq_xlim[1])
             if nyq_ylim != 'none':
@@ -4839,7 +4839,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), self.circuit_fit[i].real, lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
                     ax1.plot(np.log10(self.df[i].f), -self.circuit_fit[i].imag, lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("Z', -Z'' [$\Omega$]")
+                ax1.set_ylabel(r"Z', -Z'' [$\Omega$]")
                 if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
             
@@ -4849,7 +4849,7 @@ class EIS_exp:
                 if fitting == 'on':
                     ax1.plot(np.log10(self.df[i].f), self.circuit_fit[i].real, lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("Z' [$\Omega$]")
+                ax1.set_ylabel(r"Z' [$\Omega$]")
                 if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -4859,7 +4859,7 @@ class EIS_exp:
                 if fitting == 'on':
                     ax1.plot(np.log10(self.df[i].f), np.log10(self.circuit_fit[i].real), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("log(Z') [$\Omega$]")
+                ax1.set_ylabel(r"log(Z') [$\Omega$]")
                 if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -4869,7 +4869,7 @@ class EIS_exp:
                 if fitting == 'on':
                     ax1.plot(np.log10(self.df[i].f), -imag(self.circuit_fit[i]), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("-Z'' [$\Omega$]")
+                ax1.set_ylabel(r"-Z'' [$\Omega$]")
                 if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -4879,7 +4879,7 @@ class EIS_exp:
                 if fitting == 'on':
                     ax1.plot(np.log10(self.df[i].f), np.log10(-self.circuit_fit[i].imag), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='')
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("log(-Z'') [$\Omega$]")
+                ax1.set_ylabel(r"log(-Z'') [$\Omega$]")
                 if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -4891,7 +4891,7 @@ class EIS_exp:
                     ax1.plot(np.log10(self.df[i].f), np.log10(real(self.circuit_fit[i])), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='')
                     ax1.plot(np.log10(self.df[i].f), np.log10(-imag(self.circuit_fit[i])), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
+                ax1.set_ylabel(r"log(Z', -Z'') [$\Omega$]")
                 if legend == 'on' or legend == 'potential' or legend == 'labels': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -4951,8 +4951,8 @@ class EIS_exp:
         ### Figure specifics
         if legend == 'on' or legend == 'potential' or legend == 'labels':
             ax.legend(loc='best', fontsize=10, frameon=False)
-        ax.set_xlabel("Z' [$\Omega$]")
-        ax.set_ylabel("-Z'' [$\Omega$]")
+        ax.set_xlabel(r"Z' [$\Omega$]")
+        ax.set_ylabel(r"-Z'' [$\Omega$]")
         if nyq_xlim != 'none':
             ax.set_xlim(nyq_xlim[0], nyq_xlim[1])
         if nyq_ylim != 'none':
@@ -5203,35 +5203,35 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), self.re, color=colors_real[0], marker='D', ms=3, lw=2.25, ls='-', label="Z'")
             ax1.plot(np.log10(self.f), self.im, color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("Z', -Z'' [$\Omega$]")
+            ax1.set_ylabel(r"Z', -Z'' [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
             
         elif bode == 're':
             ax1.plot(np.log10(self.f), self.re, color=colors_real[0], marker='D', ms=3, lw=2.25, ls='-', label="Z'")
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("Z' [$\Omega$]")
+            ax1.set_ylabel(r"Z' [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode == 'log_re':
             ax1.plot(np.log10(self.f), np.log10(self.re), color=colors_real[0], marker='D', ms=3, lw=2.25, ls='-', label="Z''")
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("log(Z') [$\Omega$]")
+            ax1.set_ylabel(r"log(Z') [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='im':
             ax1.plot(np.log10(self.f), self.im, color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("-Z'' [$\Omega$]")
+            ax1.set_ylabel(r"-Z'' [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
         elif bode=='log_im':
             ax1.plot(np.log10(self.f), np.log10(self.im), color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("log(-Z'') [$\Omega$]")
+            ax1.set_ylabel(r"log(-Z'') [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -5239,15 +5239,15 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(self.re), color=colors_real[0], marker='D', ms=3, lw=2.25,  ls='-', label="Z''")
             ax1.plot(np.log10(self.f), np.log10(self.im), color=colors_imag[0], marker='s', ms=3, lw=2.25,  ls='-', label="-Z''")
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
+            ax1.set_ylabel(r"log(Z', -Z'') [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
         
         ### Figure specifics
         if legend == 'on' or legend == 'labels':
             ax.legend(loc='best', fontsize=10, frameon=False)
-        ax.set_xlabel("Z' [$\Omega$]")
-        ax.set_ylabel("-Z'' [$\Omega$]")
+        ax.set_xlabel(r"Z' [$\Omega$]")
+        ax.set_ylabel(r"-Z'' [$\Omega$]")
         if nyq_xlim != 'none':
             ax.set_xlim(nyq_xlim[0], nyq_xlim[1])
         if nyq_ylim != 'none':
@@ -6123,7 +6123,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), self.circuit_fit.real, lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.plot(np.log10(self.f), -self.circuit_fit.imag, lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("Z', -Z'' [$\Omega$]")
+            ax1.set_ylabel(r"Z', -Z'' [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
             
@@ -6131,7 +6131,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), self.re, color=colors_real[0], marker='D', ms=3, lw=2.25, ls='-', label="Z'")
             ax1.plot(np.log10(self.f), self.circuit_fit.real, lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("Z' [$\Omega$]")
+            ax1.set_ylabel(r"Z' [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -6139,7 +6139,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(self.re), color=colors_real[0], marker='D', ms=3, lw=2.25, ls='-', label="Z''")
             ax1.plot(np.log10(self.f), np.log10(self.circuit_fit.real), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("log(Z') [$\Omega$]")
+            ax1.set_ylabel(r"log(Z') [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -6147,7 +6147,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), self.im, color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.plot(np.log10(self.f), -self.circuit_fit.imag, lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("-Z'' [$\Omega$]")
+            ax1.set_ylabel(r"-Z'' [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -6155,7 +6155,7 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(self.im), color=colors_imag[0], marker='s', ms=3, lw=2.25, ls='-', label="-Z''")
             ax1.plot(np.log10(self.f), np.log10(-self.circuit_fit.imag), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("log(-Z'') [$\Omega$]")
+            ax1.set_ylabel(r"log(-Z'') [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
 
@@ -6165,15 +6165,15 @@ class EIS_sim:
             ax1.plot(np.log10(self.f), np.log10(self.circuit_fit.real), lw=0, marker='D', ms=8, mec='r', mew=1, mfc='none', label='Fit')
             ax1.plot(np.log10(self.f), np.log10(-self.circuit_fit.imag), lw=0, marker='s', ms=8, mec='r', mew=1, mfc='none')
             ax1.set_xlabel("log(f) [Hz]")
-            ax1.set_ylabel("log(Z', -Z'') [$\Omega$]")
+            ax1.set_ylabel(r"log(Z', -Z'') [$\Omega$]")
             if legend == 'on' or legend == 'labels':
                 ax1.legend(loc='best', fontsize=10, frameon=False)
         
         ### Figure specifics
         if legend == 'on' or legend == 'labels':
             ax.legend(loc='best', fontsize=10, frameon=False)
-        ax.set_xlabel("Z' [$\Omega$]")
-        ax.set_ylabel("-Z'' [$\Omega$]")
+        ax.set_xlabel(r"Z' [$\Omega$]")
+        ax.set_ylabel(r"-Z'' [$\Omega$]")
 
         if nyq_xlim != 'none':
             ax.set_xlim(nyq_xlim[0], nyq_xlim[1])
