@@ -1,4 +1,14 @@
 import setuptools
+import re
+
+# Read version from PyEIS/__init__.py
+def get_version():
+    with open("PyEIS/__init__.py") as f:
+        content = f.read()
+        version_match = re.search(r"__version__\s*=\s*['\"]([^'\"]+)['\"]", content)
+        if version_match:
+            return version_match.group(1)
+    raise RuntimeError("Unable to find version string")
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
