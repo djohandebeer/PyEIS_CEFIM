@@ -2349,122 +2349,49 @@ class EIS_exp:
         Specific cycles can be extracted using this parameter, insert cycle numbers in brackets, e.g. cycle number 1,4, and 6 are wanted. cycle=[1,4,6]
         - mask: ['high frequency' , 'low frequency'], if only a high- or low-frequency is desired use 'none' for the other, e.g. maks=[10**4,'none']
     '''
-    # DJDB: Added kwargs for customLabels and expLabel. Used in plotting
+    # DJDB: Completely rewrote the init. The old version had a lot of redundant code and was not very efficient. The new version is more efficient and easier to read.
     def __init__(self, path, data, cycle='off', mask=['none','none'], customLabels=0,expLabel=0,multiprocessing = False):
         self.path = path
-        if(not customLabels == 0):
+        if customLabels != 0:
             self.customLabels = customLabels
         self.expLabel = expLabel
         self.multiprocessing = multiprocessing
+
         self.df_raw0 = []
-        self.cycleno = []
-        for j in range(len(data)):
-            if data[j].find(".mpt") != -1: #file is a .mpt file
-                self.df_raw0.append(extract_mpt(path=path, EIS_name=data[j])) #reads all datafiles
-            elif data[j].find(".DTA") != -1: #file is a .dta file
-                self.df_raw0.append(extract_dta(path=path, EIS_name=data[j])) #reads all datafiles
-            elif data[j].find(".z") != -1: #file is a .z file
-                self.df_raw0.append(extract_solar(path=path, EIS_name=data[j])) #reads all datafiles
-            elif data[j].find(".p") != -1: #file is a .pickle file
-                self.df_raw0.append(extract_pickle(path=path, EIS_name=data[j])) #reads all datafiles
+        current_max_cycle = 0
+
+        for file in data:
+            if ".mpt" in file:   df_temp = extract_mpt(path=path, EIS_name=file)
+            elif ".DTA" in file: df_temp = extract_dta(path=path, EIS_name=file)
+            elif ".z" in file:   df_temp = extract_solar(path=path, EIS_name=file)
+            elif ".p" in file:   df_temp = extract_pickle(path=path, EIS_name=file)
             else:
-                print('Data file(s) could not be identified')
+                print(f"Data file could not be identified: {file}")
+                continue
 
-            self.cycleno.append(self.df_raw0[j].cycle_number)
-            if np.min(self.cycleno[j]) <= np.max(self.cycleno[j-1]):
-                if j > 0: #corrects cycle_number except for the first data file
-                    self.df_raw0[j].update({'cycle_number': self.cycleno[j]+np.max(self.cycleno[j-1])}) #corrects cycle number
-#            else:
-#                print('__init__ Error (#1)')
+            # Shift cycle numbers cumulatively to prevent overlap
+            df_temp['cycle_number'] += current_max_cycle
+            current_max_cycle = df_temp['cycle_number'].max()
+            
+            self.df_raw0.append(df_temp)
 
-        #currently need to append a cycle_number coloumn to gamry files
-            
-        # adds individual dataframes into one
-        
-        
-        # DJDB: Replaced all  this code with smaller code that can scale arbitrarily
-        ## START EDIT
-        # if len(self.df_raw0) == 1:
-        #     self.df_raw = self.df_raw0[0]
-        # elif len(self.df_raw0) == 2:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1]], axis=0)
-        # elif len(self.df_raw0) == 3:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2]], axis=0)
-        # elif len(self.df_raw0) == 4:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3]], axis=0)
-        # elif len(self.df_raw0) == 5:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4]], axis=0)
-        # elif len(self.df_raw0) == 6:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5]], axis=0)
-        # elif len(self.df_raw0) == 7:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6]], axis=0)
-        # elif len(self.df_raw0) == 8:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7]], axis=0)
-        # elif len(self.df_raw0) == 9:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8]], axis=0)
-        # elif len(self.df_raw0) == 10:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9]], axis=0)
-        # elif len(self.df_raw0) == 11:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10]], axis=0)
-        # elif len(self.df_raw0) == 12:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11]], axis=0)
-        # elif len(self.df_raw0) == 13:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11], self.df_raw0[12]], axis=0)
-        # elif len(self.df_raw0) == 14:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11], self.df_raw0[12], self.df_raw0[13]], axis=0)
-        # elif len(self.df_raw0) == 15:
-        #     self.df_raw = pd.concat([self.df_raw0[0], self.df_raw0[1], self.df_raw0[2], self.df_raw0[3], self.df_raw0[4], self.df_raw0[5], self.df_raw0[6], self.df_raw0[7], self.df_raw0[8], self.df_raw0[9], self.df_raw0[10], self.df_raw0[11], self.df_raw0[12], self.df_raw0[13], self.df_raw0[14]], axis=0)
-        # else:
-        #     print("Too many data files || 15 allowed")
-                
-        self.df_raw=pd.concat(self.df_raw0,axis=0)
-            
-            
-        ## END EDIT
-        
-        self.df_raw = self.df_raw.assign(w = 2*np.pi*self.df_raw.f) #creats a new coloumn with the angular frequency
+        self.df_raw = pd.concat(self.df_raw0, axis=0, ignore_index=True)
+        self.df_raw['w'] = 2 * np.pi * self.df_raw['f']
 
-        #Masking data to each cycle
-        self.df_pre = []
-        self.df_limited = []
-        self.df_limited2 = []
-        self.df = []
-        if mask == ['none','none'] and cycle == 'off':
-            for i in range(len(self.df_raw.cycle_number.unique())): #includes all data
-                self.df.append(self.df_raw[self.df_raw.cycle_number == self.df_raw.cycle_number.unique()[i]])                
-        elif mask == ['none','none'] and cycle != 'off':
-            for i in range(len(cycle)):
-                self.df.append(self.df_raw[self.df_raw.cycle_number == cycle[i]]) #extracting dataframe for each cycle                                
-        elif mask[0] != 'none' and mask[1] == 'none' and cycle == 'off':
-            self.df_pre = self.df_raw.mask(self.df_raw.f > mask[0])
-            self.df_pre.dropna(how='all', inplace=True)
-            for i in range(len(self.df_pre.cycle_number.unique())): #Appending data based on cycle number
-                self.df.append(self.df_pre[self.df_pre.cycle_number == self.df_pre.cycle_number.unique()[i]])
-        elif mask[0] != 'none' and mask[1] == 'none' and cycle != 'off': # or [i for i, e in enumerate(mask) if e == 'none'] == [0]
-            self.df_limited = self.df_raw.mask(self.df_raw.f > mask[0])
-            for i in range(len(cycle)):
-                self.df.append(self.df_limited[self.df_limited.cycle_number == cycle[i]])
-        elif mask[0] == 'none' and mask[1] != 'none' and cycle == 'off':
-            self.df_pre = self.df_raw.mask(self.df_raw.f < mask[1])
-            self.df_pre.dropna(how='all', inplace=True)
-            for i in range(len(self.df_raw.cycle_number.unique())): #includes all data
-                self.df.append(self.df_pre[self.df_pre.cycle_number == self.df_pre.cycle_number.unique()[i]])
-        elif mask[0] == 'none' and mask[1] != 'none' and cycle != 'off': 
-            self.df_limited = self.df_raw.mask(self.df_raw.f < mask[1])
-            for i in range(len(cycle)):
-                self.df.append(self.df_limited[self.df_limited.cycle_number == cycle[i]])
-        elif mask[0] != 'none' and mask[1] != 'none' and cycle != 'off':
-            self.df_limited = self.df_raw.mask(self.df_raw.f < mask[1])
-            self.df_limited2 = self.df_limited.mask(self.df_raw.f > mask[0])
-            for i in range(len(cycle)):
-                self.df.append(self.df_limited[self.df_limited2.cycle_number == cycle[i]])
-        elif mask[0] != 'none' and mask[1] != 'none' and cycle == 'off':
-            self.df_limited = self.df_raw.mask(self.df_raw.f < mask[1])
-            self.df_limited2 = self.df_limited.mask(self.df_raw.f > mask[0])
-            for i in range(len(self.df_raw.cycle_number.unique())):
-                self.df.append(self.df_limited[self.df_limited2.cycle_number == self.df_raw.cycle_number.unique()[i]])
-        else:
-            print('__init__ error (#2)')
+        df_filtered = self.df_raw.copy()
+
+        # Apply frequency masks using standard boolean indexing (no more .mask() dropping rows)
+        if mask[0] != 'none':
+            df_filtered = df_filtered[df_filtered['f'] <= mask[0]]
+        if mask[1] != 'none':
+            df_filtered = df_filtered[df_filtered['f'] >= mask[1]]
+
+        # Apply cycle selection if it isn't 'off'
+        if cycle != 'off':
+            df_filtered = df_filtered[df_filtered['cycle_number'].isin(cycle)]
+
+        # Automatically splits the dataframe into a list of dataframes, one per cycle
+        self.df = [group for _, group in df_filtered.groupby('cycle_number')]
 
 
     def Lin_KK(self, num_RC='auto', legend='on', plot='residuals', bode='off', nyq_xlim='none', nyq_ylim='none', weight_func='Boukamp', savefig='none'):
