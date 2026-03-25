@@ -37,6 +37,7 @@ setuptools.setup(
         "scipy",
         "matplotlib",
         "mpmath",
-        "lmfit"
+        "lmfit",
+        "seaborn"
     ],
 )
