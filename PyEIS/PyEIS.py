@@ -2803,7 +2803,7 @@ class EIS_exp:
                 ax2.plot(np.log10(self.df[i].f), self.KK_rr_re[i]*100, color=colors_real[i+1], marker='D', ls='--', ms=6, alpha=.7, label=self.label_re_1[i])
                 ax2.plot(np.log10(self.df[i].f), self.KK_rr_im[i]*100, color=colors_imag[i+1], marker='s', ls='--', ms=6, alpha=.7, label=self.label_im_1[i])
                 ax2.set_xlabel("log(f) [Hz]")
-                ax2.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]")
+                ax2.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]")
                 if legend == 'on' or legend == 'potential' or legend =='labels':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
             ax2.axhline(0, ls='--', c='k', alpha=.5)
@@ -2850,10 +2850,10 @@ class EIS_exp:
                 fig = figure(figsize=(12, 3.8), dpi=120, facecolor='w', edgecolor='k')
                 fig.subplots_adjust(left=0.1, right=0.95, hspace=0.25, wspace=0.25, bottom=0.1, top=0.95)
                 ax = fig.add_subplot(231)
-                ax.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax.set_xlabel("log(f) [Hz]")
-                ax.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]")
+                ax.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]")
                 if legend == 'on' or legend == 'potential':
                     ax.legend(loc='best', fontsize=10, frameon=False)        
                 ax.axhline(0, ls='--', c='k', alpha=.5)
@@ -2896,17 +2896,17 @@ class EIS_exp:
                 ax2 = fig.add_subplot(232)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
                 if legend == 'on' or legend == 'potential':
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 #cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax2.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
@@ -2970,25 +2970,25 @@ class EIS_exp:
                 ax3 = fig.add_subplot(233)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax1.set_xlabel("log(f) [Hz]")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
                 if legend == 'on' or legend == 'potential':
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax2.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
                 ax2.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 3
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax3.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax3.legend(loc='best', fontsize=10, frameon=False)        
@@ -3064,33 +3064,33 @@ class EIS_exp:
                 ax4 = fig.add_subplot(224)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
                 if legend == 'on' or legend == 'potential':
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax2.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
                 ax2.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 3
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax3.set_xlabel("log(f) [Hz]")
-                ax3.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
+                ax3.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
                 if legend == 'on' or legend == 'potential':
                     ax3.legend(loc='best', fontsize=10, frameon=False)        
                 ax3.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 4
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax4.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax4.legend(loc='best', fontsize=10, frameon=False)        
@@ -3180,40 +3180,40 @@ class EIS_exp:
                 ax5 = fig.add_subplot(235)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
                 if legend == 'on' or legend == 'potential':
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
                 ax2.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 3
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax3.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax3.legend(loc='best', fontsize=10, frameon=False)        
                 ax3.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 4
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax4.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax4.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=18)
                 ax4.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax4.legend(loc='best', fontsize=10, frameon=False)        
                 ax4.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 5
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax5.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax5.legend(loc='best', fontsize=10, frameon=False)        
@@ -3315,47 +3315,47 @@ class EIS_exp:
                 ax6 = fig.add_subplot(236)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 if legend == 'on' or legend == 'potential':
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
                 ax2.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 3
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on' or legend == 'potential':
                     ax3.legend(loc='best', fontsize=10, frameon=False)        
                 ax3.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 4
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax4.set_xlabel("log(f) [Hz]")
-                ax4.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax4.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 if legend == 'on' or legend == 'potential':
                     ax4.legend(loc='best', fontsize=10, frameon=False)        
                 ax4.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 5
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax5.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax5.legend(loc='best', fontsize=10, frameon=False)        
                 ax5.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 6
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax6.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax6.legend(loc='best', fontsize=10, frameon=False)        
@@ -3470,57 +3470,57 @@ class EIS_exp:
                 ax7 = fig.add_subplot(337)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 if legend == 'on' or legend == 'potential':
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
                 ax2.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 3
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax3.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax3.legend(loc='best', fontsize=10, frameon=False)
                 ax3.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 4
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax4.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax4.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 if legend == 'on' or legend == 'potential':
                     ax4.legend(loc='best', fontsize=10, frameon=False)
                 ax4.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 5
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax5.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax5.legend(loc='best', fontsize=10, frameon=False)
                 ax5.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 6
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax6.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax6.legend(loc='best', fontsize=10, frameon=False)
                 ax6.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 7
-                ax7.plot(np.log10(self.df[6].f), self.KK_rr_re[6]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax7.plot(np.log10(self.df[6].f), self.KK_rr_im[6]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax7.plot(np.log10(self.df[6].f), self.KK_rr_re[6]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax7.plot(np.log10(self.df[6].f), self.KK_rr_im[6]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax7.set_xlabel("log(f) [Hz]")
-                ax7.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax7.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 if legend == 'on' or legend == 'potential':
                     ax7.legend(loc='best', fontsize=10, frameon=False)
                 ax7.axhline(0, ls='--', c='k', alpha=.5)
@@ -3647,62 +3647,62 @@ class EIS_exp:
                 ax8 = fig.add_subplot(338)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=14)
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=14)
                 if legend == 'on' or legend == 'potential':
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
                 ax2.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 3
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on' or legend == 'potential':
                     ax3.legend(loc='best', fontsize=10, frameon=False)        
                 ax3.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 4
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax4.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=14)
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax4.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=14)
                 if legend == 'on' or legend == 'potential':
                     ax4.legend(loc='best', fontsize=10, frameon=False)        
                 ax4.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 5
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on' or legend == 'potential':
                     ax5.legend(loc='best', fontsize=10, frameon=False)        
                 ax5.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 6
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax6.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax6.legend(loc='best', fontsize=10, frameon=False)        
                 ax6.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 7
-                ax7.plot(np.log10(self.df[6].f), self.KK_rr_re[6]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax7.plot(np.log10(self.df[6].f), self.KK_rr_im[6]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax7.plot(np.log10(self.df[6].f), self.KK_rr_re[6]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax7.plot(np.log10(self.df[6].f), self.KK_rr_im[6]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax7.set_xlabel("log(f) [Hz]")
-                ax7.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=14)                
+                ax7.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=14)                
                 if legend == 'on' or legend == 'potential':
                     ax7.legend(loc='best', fontsize=10, frameon=False)        
                 ax7.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 8
-                ax8.plot(np.log10(self.df[7].f), self.KK_rr_re[7]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax8.plot(np.log10(self.df[7].f), self.KK_rr_im[7]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax8.plot(np.log10(self.df[7].f), self.KK_rr_re[7]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax8.plot(np.log10(self.df[7].f), self.KK_rr_im[7]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax8.set_xlabel("log(f) [Hz]")
                 if legend == 'on' or legend == 'potential':
                     ax8.legend(loc='best', fontsize=10, frameon=False)        
@@ -3843,69 +3843,69 @@ class EIS_exp:
                 ax9 = fig.add_subplot(339)
                 
                 #cycle 1
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax1.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_re[0]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax1.plot(np.log10(self.df[0].f), self.KK_rr_im[0]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax1.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 if legend == 'on': 
                     ax1.legend(loc='best', fontsize=10, frameon=False)        
                 ax1.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 2
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_re[1]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax2.plot(np.log10(self.df[1].f), self.KK_rr_im[1]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on': 
                     ax2.legend(loc='best', fontsize=10, frameon=False)        
                 ax2.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 3
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_re[2]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax3.plot(np.log10(self.df[2].f), self.KK_rr_im[2]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on': 
                     ax3.legend(loc='best', fontsize=10, frameon=False)        
                 ax3.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 4
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax4.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_re[3]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax4.plot(np.log10(self.df[3].f), self.KK_rr_im[3]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax4.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 if legend == 'on': 
                     ax4.legend(loc='best', fontsize=10, frameon=False)        
                 ax4.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 5
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_re[4]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax5.plot(np.log10(self.df[4].f), self.KK_rr_im[4]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on': 
                     ax5.legend(loc='best', fontsize=10, frameon=False)        
                 ax5.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 6
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_re[5]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax6.plot(np.log10(self.df[5].f), self.KK_rr_im[5]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 if legend == 'on': 
                     ax6.legend(loc='best', fontsize=10, frameon=False)        
                 ax6.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 7
-                ax7.plot(np.log10(self.df[6].f), self.KK_rr_re[6]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax7.plot(np.log10(self.df[6].f), self.KK_rr_im[6]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
-                ax7.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
+                ax7.plot(np.log10(self.df[6].f), self.KK_rr_re[6]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax7.plot(np.log10(self.df[6].f), self.KK_rr_im[6]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
+                ax7.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]", fontsize=15)
                 ax7.set_xlabel("log(f) [Hz]")
                 if legend == 'on':
                     ax7.legend(loc='best', fontsize=10, frameon=False)
                 ax7.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 8
-                ax8.plot(np.log10(self.df[7].f), self.KK_rr_re[7]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax8.plot(np.log10(self.df[7].f), self.KK_rr_im[7]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax8.plot(np.log10(self.df[7].f), self.KK_rr_re[7]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax8.plot(np.log10(self.df[7].f), self.KK_rr_im[7]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax8.set_xlabel("log(f) [Hz]")
                 if legend == 'on':
                     ax8.legend(loc='best', fontsize=10, frameon=False)
                 ax8.axhline(0, ls='--', c='k', alpha=.5)
 
                 # Cycle 9
-                ax9.plot(np.log10(self.df[8].f), self.KK_rr_re[8]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label="$\Delta$Z'")
-                ax9.plot(np.log10(self.df[8].f), self.KK_rr_im[8]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label="$\Delta$-Z''")
+                ax9.plot(np.log10(self.df[8].f), self.KK_rr_re[8]*100, color=colors_real[3], marker='D', ls='--', ms=6, alpha=.7, label=r"$\Delta$Z'")
+                ax9.plot(np.log10(self.df[8].f), self.KK_rr_im[8]*100, color=colors_imag[3], marker='s', ls='--', ms=6, alpha=.7, label=r"$\Delta$-Z''")
                 ax9.set_xlabel("log(f) [Hz]")
                 if legend == 'on':
                     ax9.legend(loc='best', fontsize=10, frameon=False)
@@ -4917,7 +4917,7 @@ class EIS_exp:
 
                     ax2.axhline(0, ls='--', c='k', alpha=.5)
                     ax2.set_xlabel("log(f) [Hz]")
-                    ax2.set_ylabel("$\Delta$Z', $\Delta$-Z'' [%]")
+                    ax2.set_ylabel(r"$\Delta$Z', $\Delta$-Z'' [%]")
 
                 #Automatic y-limits limits
                 self.rr_im_min = []
@@ -4938,12 +4938,12 @@ class EIS_exp:
                     self.rr_ymin  = self.rr_im_min
                 if np.abs(self.rr_ymin) > np.abs(self.rr_ymax):
                     ax2.set_ylim(self.rr_ymin *100*1.5, np.abs(self.rr_ymin)*100*1.5)
-                    ax2.annotate("$\Delta$Z'", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymin )*100*1.2), color=colors_real[-1], fontsize=12)
-                    ax2.annotate("$\Delta$-Z''", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymin )*100*0.9), color=colors_imag[-1], fontsize=12)
+                    ax2.annotate(r"$\Delta$Z'", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymin )*100*1.2), color=colors_real[-1], fontsize=12)
+                    ax2.annotate(r"$\Delta$-Z''", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymin )*100*0.9), color=colors_imag[-1], fontsize=12)
                 elif np.abs(self.rr_ymin) < np.abs(self.rr_ymax):
                     ax2.set_ylim(np.negative(self.rr_ymax)*100*1.5, np.abs(self.rr_ymax)*100*1.5)                    
-                    ax2.annotate("$\Delta$Z'", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymax)*100*1.2), color=colors_real[-1], fontsize=12)
-                    ax2.annotate("$\Delta$-Z''", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymax)*100*0.9), color=colors_imag[-1], fontsize=12)
+                    ax2.annotate(r"$\Delta$Z'", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymax)*100*1.2), color=colors_real[-1], fontsize=12)
+                    ax2.annotate(r"$\Delta$-Z''", xy=(np.log10(np.min(self.df[0].f)), np.abs(self.rr_ymax)*100*0.9), color=colors_imag[-1], fontsize=12)
     
                 if legend == 'on' or legend == 'potential':
                     ax2.legend(loc='best', fontsize=10, frameon=False)
@@ -5127,7 +5127,7 @@ class EIS_exp:
         self.C_norm = (np.array(self.Q_norm)/(m_electrode*BET_Area))*10**6 #'uF/cm2'
         ax.plot(self.E, self.C_norm, 'o--', label='C$_{dl}$')
         ax.set_xlabel('Voltage [V]')
-        ax.set_ylabel('C$_{dl}$ [$\mu$F/cm$^2$]')
+        ax.set_ylabel(r"C$_{dl}$ [$\mu$F/cm$^2$]")
 
 
 class EIS_sim:
